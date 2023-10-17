@@ -103,33 +103,33 @@ if len(sys.argv) != nvar+1:
   sys.exit('El número de articulaciones no es el correcto ('+str(nvar)+')')
 p=[float(i) for i in sys.argv[1:nvar+1]]
 
-# Parámetros D-H: 3 articulaciones
-#      1    2    3
-d  = [ 0,   5,  2]
-th = [  0, 0, 45]
-a  = [  2,  0,  0]
-al = [  -90,  90,  0]
+# Parámetros D-H:
+#        1    2
+d  = [   5,   0, 0]
+th = [p[0], 0, p[2]]
+a  = [  0,   p[1], 2]
+al = [   90,   0, 0]
 
 # Orígenes para cada articulación
-o00=[0,0,0,1]
-o11=[0,0,0,1]
-o22=[0,0,0,1]
-o33=[0,0,0,1]
+o00 = [0,0,0,1]
+o11 = [0,0,0,1]
+o22 = [0,0,0,1]
+o33 = [0,0,0,1]
 
 # Cálculo matrices transformación
-T01=matriz_T(d[0],th[0],a[0],al[0])
-T12=matriz_T(d[1],th[1],a[1],al[1])
-T23=matriz_T(d[2],th[2],a[2],al[2])
-T02=np.dot(T01,T12)
-T03=np.dot(T02,T23)
+T01 = matriz_T(d[0],th[0],a[0],al[0])
+T12 = matriz_T(d[1],th[1],a[1],al[1])
+T23 = matriz_T(d[2],th[2],a[2],al[2])
+T02 = np.dot(T01,T12)
+T03 = np.dot(T02,T23)
 
 # Transformación de cada articulación
-o10 =np.dot(T01, o11).tolist()
-o20 =np.dot(T02, o22).tolist()
-o30 =np.dot(T03, o33).tolist()
+o10 = np.dot(T01, o11).tolist()
+o20 = np.dot(T02, o22).tolist()
+o30 = np.dot(T03, o33).tolist()
 
 # Mostrar resultado de la cinemática directa
-muestra_origenes([o00,o10,o20, o30])
-muestra_robot   ([o00,o10,o20, o30])
+muestra_origenes([o00, o10, o20, o30])
+muestra_robot   ([o00, o10, o20, o30])
 input()
 
