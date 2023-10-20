@@ -11,7 +11,7 @@
 # Manipulador 3: 5 articulaciones
 
 # Ejemplo:
-# ./cdDH.py 30 45
+# ./cin_dir_3.py 5 0 5 90 45 
 
 import sys
 from math import *
