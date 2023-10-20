@@ -11,7 +11,8 @@
 # Manipulador 2: 3 articulaciones
 
 # Ejemplo:
-# ./cdDH.py 30 45
+# ./cin_dir_2.py 30 2 30
+# ./cin_dir_2.py 0 7 0
 
 import sys
 from math import *
@@ -104,11 +105,11 @@ if len(sys.argv) != nvar+1:
 p=[float(i) for i in sys.argv[1:nvar+1]]
 
 # Parámetros D-H:
-#        1    2
-d  = [   5,   0, 0]
-th = [p[0], 0, p[2]]
-a  = [  0,   p[1], 2]
-al = [   90,   0, 0]
+#        1      2      3
+d  = [   5,     0,     0]
+th = [p[0],     0,  p[2]]
+a  = [   0,  p[1],     2]
+al = [   0,    90,     0]
 
 # Orígenes para cada articulación
 o00 = [0,0,0,1]
@@ -132,4 +133,3 @@ o30 = np.dot(T03, o33).tolist()
 muestra_origenes([o00, o10, o20, o30])
 muestra_robot   ([o00, o10, o20, o30])
 input()
-
