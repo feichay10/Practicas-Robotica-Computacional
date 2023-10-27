@@ -136,7 +136,7 @@ T22prima=matriz_T(d[2],th[2],a[2],al[2])
 T2prima3=matriz_T(d[3],th[3],a[3],al[3])
 T23=np.dot(T22prima,T2prima3)
 T03=np.dot(T02,T23)
-#########################################
+
 T34=matriz_T(d[4],th[4],a[4],al[4])
 T04=np.dot(T03,T34)
 
@@ -157,7 +157,6 @@ o40=np.dot(T04, o44).tolist()
 o510=np.dot(T051, o5151).tolist()
 o520=np.dot(T052, o5252).tolist()
 oEF0=np.dot(T0EF, oefef).tolist()
-
 
 # Mostrar resultado de la cinemática directa
 muestra_origenes([o00, o11, o22, o33, o44, [[o510], [o520]], oEF0])
