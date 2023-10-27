@@ -6,7 +6,7 @@
 # Práctica: Resolución de la cinemática directa mediante Denavit-Hartenberg.
 
 # Ejemplo:
-# ./cdDH.py 30 45
+# python3 cin_dir_4.py 45 -90 -40 10 10 5
 
 import sys
 from math import *
