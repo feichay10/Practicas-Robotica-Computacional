@@ -1,0 +1,5 @@
+- Sentido horario negativo
+- Sentido antihorario positivo
+- Articulacion circular, la z siempre en la parte plana
+- d y a siempre 0 en los puntos
+- Todas las esquinas son puntos
