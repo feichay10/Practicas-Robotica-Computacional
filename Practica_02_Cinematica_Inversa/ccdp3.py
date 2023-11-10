@@ -89,13 +89,31 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
   prev = dist
   O=[cin_dir(th,a)]
   # Para cada combinación de articulaciones:
-  for i in range(len(th)):
-    # cálculo de la cinemática inversa:
+  num_articulaciones = len(th)
+  for i in range(num_articulaciones):
+    # Cálculo de la cinemática inversa (CCD):
+
+    # Articulacion rotatoria (trigonometria)
+    j = num_articulaciones - 1 - i # articulacion index
+
+    # Calculamos alpha 1
+    xj0, yj0 = O[i][j]
+    xt0, yt0 = objetivo
+    xtj = xt0 - xj0
+    ytj = yt0 - yj0
+    alpha1 = atan2(ytj, xtj)
+
+    # Calculamos alpha 2
+    xp0, yp0 = O[i][-1]
+    xpj = xp0 - xj0
+    ypj = yp0 - yj0
+    alpha2 = atan2(ypj, xpj)
     
-    
-  
-    
-    
+    # Obtenemos theta
+    theta = alpha1 - alpha2
+
+    # Actualizamos el valor de theta
+    th[j] += theta
     O.append(cin_dir(th,a))
 
   dist = np.linalg.norm(np.subtract(objetivo,O[-1][-1]))
