@@ -73,12 +73,13 @@ EPSILON = .01
 #plt.ion() # modo interactivo
 
 # introducción del punto para la cinemática inversa
-if len(sys.argv) != 3:
-  sys.exit("python " + sys.argv[0] + " x y")
+if len(sys.argv) != 4:
+  sys.exit("python " + sys.argv[0] + " x, y, 0 || 1 -> (0 = rotatoria, 1 = prismática)")
 objetivo=[float(i) for i in sys.argv[1:]]
 O=cin_dir(th,a)
 #O=zeros(len(th)+1) # Reservamos estructura en memoria
- # Calculamos la posicion inicial
+
+# Calculamos la posicion inicial
 print ("- Posicion inicial:")
 muestra_origenes(O)
 
@@ -93,28 +94,34 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
   for i in range(num_articulaciones):
     # Cálculo de la cinemática inversa (CCD):
 
+    tipo_articulacion = 0 # 0: rotatoria, 1: prismática
+
     # Articulacion rotatoria (trigonometria)
-    j = num_articulaciones - 1 - i # articulacion index
+    if [tipo_articulacion == 0]:
+      print("Articulacion rotatoria")
+      j = num_articulaciones - 1 - i # articulacion index
 
-    # Calculamos alpha 1
-    xj0, yj0 = O[i][j]
-    xt0, yt0 = objetivo
-    xtj = xt0 - xj0
-    ytj = yt0 - yj0
-    alpha1 = atan2(ytj, xtj)
+      # Calculamos alpha 1
+      xj0, yj0 = O[i][j]
+      xt0, yt0 = objetivo
+      xtj = xt0 - xj0
+      ytj = yt0 - yj0
+      alpha1 = atan2(ytj, xtj)
 
-    # Calculamos alpha 2
-    xp0, yp0 = O[i][-1]
-    xpj = xp0 - xj0
-    ypj = yp0 - yj0
-    alpha2 = atan2(ypj, xpj)
-    
-    # Obtenemos theta
-    theta = alpha1 - alpha2
+      # Calculamos alpha 2
+      xp0, yp0 = O[i][-1]
+      xpj = xp0 - xj0
+      ypj = yp0 - yj0
+      alpha2 = atan2(ypj, xpj)
+      
+      # Obtenemos theta
+      theta = alpha1 - alpha2
 
-    # Actualizamos el valor de theta
-    th[j] += theta
-    O.append(cin_dir(th,a))
+      # Actualizamos el valor de theta
+      th[j] += theta
+      O.append(cin_dir(th,a))
+    else:
+      print("Articulacion prismatica")
 
   dist = np.linalg.norm(np.subtract(objetivo,O[-1][-1]))
   print ("\n- Iteracion " + str(iteracion) + ':')
