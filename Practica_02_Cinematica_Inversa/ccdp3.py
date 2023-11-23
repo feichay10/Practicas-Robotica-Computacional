@@ -70,11 +70,12 @@ a =[5.,5.,5.]
 L = sum(a) # variable para representación gráfica
 EPSILON = .01
 
-#plt.ion() # modo interactivo
+# plt.ion() # modo interactivo
 
 # introducción del punto para la cinemática inversa
-if len(sys.argv) != 4:
-  sys.exit("python " + sys.argv[0] + " x, y, 0 || 1 -> (0 = rotatoria, 1 = prismática)")
+if len(sys.argv) != 3:
+  # sys.exit("python " + sys.argv[0] + " x, y, 0 || 1 -> (0 = rotatoria, 1 = prismática)")
+  sys.exit("python " + sys.argv[0] + " x, y")
 objetivo=[float(i) for i in sys.argv[1:]]
 O=cin_dir(th,a)
 #O=zeros(len(th)+1) # Reservamos estructura en memoria
