@@ -103,9 +103,7 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
   for i in range(num_articulaciones):
     # ===== Cálculo de la cinemática inversa (CCD) =====
     j = num_articulaciones - i - 1  # Articulación actual
-    
-    # Articulacion rotatoria
-    if [tipo_articulacion[j] == 0 for j in range(num_articulaciones)][i]:
+    if [tipo_articulacion[j] == 0 for j in range(num_articulaciones)][i]: # Articulacion rotatoria
       print("Articulacion rotatoria")
       # Calculamos los vectores v1 y v2, que representan las diferencias de posición entre los puntos de interés
       v1 = np.subtract(objetivo, O[i][j]) # delta - O_2
@@ -127,13 +125,10 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
         th[j] = np.radians(limite_sup[j])
       elif (th[j] < np.radians(limite_inf[j])):
         th[j] = np.radians(limite_inf[j])
-        
-    # Articulacion prismatica
-    elif [tipo_articulacion[j] == 1 for j in range(num_articulaciones)][i]:
+    elif [tipo_articulacion[j] == 1 for j in range(num_articulaciones)][i]: # Articulacion prismatica
       print("Articulacion prismatica")
       w = np.sum(th[:j + 1]) # Sumatorio de 'th' de 0 hasta 'actual' (incluido)
-      d = np.dot([np.cos(w), np.sin(w)], np.subtract(objetivo, O[i][-1])) # Proyección escalar del vector unitario, d = [cos(w), sin(w)] * (objetivo - punto final)
-    
+      d = np.dot([np.cos(w), np.sin(w)], np.subtract(objetivo, O[i][-1]))   # Proyección escalar del vector unitario, d = [cos(w), sin(w)] * (objetivo - punto final)
       a[j] += d   # Actualizamos 'a'
       
       # Comprobamos los límites
