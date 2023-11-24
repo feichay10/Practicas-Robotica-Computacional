@@ -67,7 +67,7 @@ th = [0.,0.,0.]               # Ángulos de las articulaciones
 a = [5.,5.,5.]                # Longitud de las articulaciones
 tipo_articulacion = [0, 0, 0] # Tipo de articulación - (0) rotacional, (1) prismática
 limite_sup = [45, 10, 90]     # Límite superior de las articulaciones, por encima eje X
-limite_inf = [-45, 2, -90]    # Límite inferior de las articulaciones, por debajo eje X
+limite_inf = [-45, 0, -90]    # Límite inferior de las articulaciones, por debajo eje X
 
 L = sum(a)                    # Variable para representación gráfica
 EPSILON = .01
