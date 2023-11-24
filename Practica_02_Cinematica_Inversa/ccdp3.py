@@ -35,10 +35,8 @@ def muestra_robot(O,obj):
   for i in range(len(T)):
     plt.plot(T[i][0], T[i][1], '-o', color=cs.hsv_to_rgb(i/float(len(T)),1,1))
   plt.plot(obj[0], obj[1], '*')
-  plt.pause(0.0001)
   plt.show()
-  
-#  input()
+  input("Presiona Enter para continuar...")
   plt.close()
 
 def matriz_T(d,th,a,al):
@@ -64,21 +62,32 @@ def cin_dir(th,a):
 # ******************************************************************************
 # Cálculo de la cinemática inversa de forma iterativa por el método CCD
 
-# valores articulares arbitrarios para la cinemática directa inicial
-th=[0.,0.,0.]
-a =[5.,5.,5.]
-L = sum(a) # variable para representación gráfica
+# Valores articulares arbitrarios para la cinemática directa inicial
+th = [0.,0.,0.]               # Ángulos de las articulaciones
+a = [5.,5.,5.]                # Longitud de las articulaciones
+tipo_articulacion = [0, 0, 0] # Tipo de articulación - (0) rotacional, (1) prismática
+limite_sup = [45, 10, 90]     # Límite superior de las articulaciones, por encima eje X
+limite_inf = [-45, 2, -90]    # Límite inferior de las articulaciones, por debajo eje X
+
+L = sum(a)                    # Variable para representación gráfica
 EPSILON = .01
 
-# plt.ion() # modo interactivo
+print("\r\n")
+print("th =", th)
+print("a =", a)
+print("Tipo de articulacion =", tipo_articulacion)
+print("L =", L)
+print("Limite superior =", limite_sup)
+print("limite inferior =", limite_inf)
+print("\r\n")
 
-# introducción del punto para la cinemática inversa
+plt.ion() # Modo interactivo
+
+# Introducción del punto para la cinemática inversa
 if len(sys.argv) != 3:
-  # sys.exit("python " + sys.argv[0] + " x, y, 0 || 1 -> (0 = rotatoria, 1 = prismática)")
   sys.exit("python " + sys.argv[0] + " x, y")
-objetivo=[float(i) for i in sys.argv[1:]]
-O=cin_dir(th,a)
-#O=zeros(len(th)+1) # Reservamos estructura en memoria
+objetivo = [float(i) for i in sys.argv[1:]] # Objetivo a alcanzar, punto final
+O = cin_dir(th,a) # Calculamos la posicion inicial
 
 # Calculamos la posicion inicial
 print ("- Posicion inicial:")
@@ -88,41 +97,55 @@ dist = float("inf")
 prev = 0.
 iteracion = 1
 while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
-  prev = dist
+  prev = dist           
   O=[cin_dir(th,a)]
-  # Para cada combinación de articulaciones:
   num_articulaciones = len(th)
   for i in range(num_articulaciones):
-    # Cálculo de la cinemática inversa (CCD):
-
-    tipo_articulacion = 0 # 0: rotatoria, 1: prismática
-
-    # Articulacion rotatoria (trigonometria)
-    if [tipo_articulacion == 0]:
+    # ===== Cálculo de la cinemática inversa (CCD) =====
+    j = num_articulaciones - i - 1  # Articulación actual
+    
+    # Articulacion rotatoria
+    if [tipo_articulacion[j] == 0 for j in range(num_articulaciones)][i]:
       print("Articulacion rotatoria")
-      j = num_articulaciones - 1 - i # articulacion index
-
-      # Calculamos alpha 1
-      xj0, yj0 = O[i][j]
-      xt0, yt0 = objetivo
-      xtj = xt0 - xj0
-      ytj = yt0 - yj0
-      alpha1 = atan2(ytj, xtj)
-
-      # Calculamos alpha 2
-      xp0, yp0 = O[i][-1]
-      xpj = xp0 - xj0
-      ypj = yp0 - yj0
-      alpha2 = atan2(ypj, xpj)
+      # Calculamos los vectores v1 y v2, que representan las diferencias de posición entre los puntos de interés
+      v1 = np.subtract(objetivo, O[i][j]) # delta - O_2
+      v2 = np.subtract(O[i][-1], O[i][j]) # O_3 - O_2
       
-      # Obtenemos theta
-      theta = alpha1 - alpha2
-
-      # Actualizamos el valor de theta
-      th[j] += theta
-      O.append(cin_dir(th,a))
-    else:
+      # Calculamos los ángulos alpha1 y alpha2
+      alpha1 = atan2(v1[1], v1[0]) 
+      alpha2 = atan2(v2[1], v2[0])
+      
+      # Calculamos el ángulo theta
+      th[j] += alpha1 - alpha2
+      
+      # Normalizamos el ángulo theta
+      while th[j] > pi: th[j] -= 2 * pi
+      while th[j] < -pi: th[j] += 2 * pi
+      
+      # Aplicamos los límites a theta
+      if (th[j] > np.radians(limite_sup[j])):
+        th[j] = np.radians(limite_sup[j])
+      elif (th[j] < np.radians(limite_inf[j])):
+        th[j] = np.radians(limite_inf[j])
+        
+    # Articulacion prismatica
+    elif [tipo_articulacion[j] == 1 for j in range(num_articulaciones)][i]:
       print("Articulacion prismatica")
+      w = np.sum(th[:j + 1]) # Sumatorio de 'th' de 0 hasta 'actual' (incluido)
+      d = np.dot([np.cos(w), np.sin(w)], np.subtract(objetivo, O[i][-1])) # Proyección escalar del vector unitario, d = [cos(w), sin(w)] * (objetivo - punto final)
+    
+      a[j] += d   # Actualizamos 'a'
+      
+      # Comprobamos los límites
+      if (a[j] > limite_sup[j]):
+        a[j] = limite_sup[j]
+      elif (a[j] < limite_inf[j]):
+        a[j] = limite_inf[j]    
+    else:
+      print("Tipo de articulacion no reconocido, tiene que ser rotatoria (0) o prismatica (1)")
+      exit(1)
+      
+    O.append(cin_dir(th,a))
 
   dist = np.linalg.norm(np.subtract(objetivo,O[-1][-1]))
   print ("\n- Iteracion " + str(iteracion) + ':')
