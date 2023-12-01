@@ -1,10 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Robótica Computacional 
-# Grado en Ingeniería Informática (Cuarto)
-# Práctica 5:
-#     Simulación de robots móviles holonómicos y no holonómicos.
+# Universidad de La Laguna
+# Escuela Superior de IngenierÃ­a y TecnologÃ­a
+# Grado en IngenierÃ­a InformÃ¡tica
+# Asignatura: RobÃ³tica Computacional
+# Curso: 4Âº
+# PrÃ¡ctica 3: SimulaciÃ³n de robots mÃ³viles holonÃ³micos y no holonÃ³micos
+# Author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
 
 #localizacion.py
 
@@ -16,14 +19,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 # ******************************************************************************
-# Declaración de funciones
+# Declaraciï¿½n de funciones
 
 def distancia(a,b):
   # Distancia entre dos puntos (admite poses)
   return np.linalg.norm(np.subtract(a[:2],b[:2]))
 
 def angulo_rel(pose,p):
-  # Diferencia angular entre una pose y un punto objetivo 'p'
+  # Diferencia angular entre una pose y un punto objetivo (baliza) 'p'
   w = atan2(p[1]-pose[1],p[0]-pose[0])-pose[2]
   while w >  pi: w -= 2*pi
   while w < -pi: w += 2*pi
@@ -32,7 +35,7 @@ def angulo_rel(pose,p):
 def mostrar(objetivos,ideal,trayectoria):
   # Mostrar objetivos y trayectoria:
   #plt.ion() # modo interactivo
-  # Fijar los bordes del gráfico
+  # Fijar los bordes del grï¿½fico
   objT   = np.array(objetivos).T.tolist()
   trayT  = np.array(trayectoria).T.tolist()
   ideT   = np.array(ideal).T.tolist()
@@ -57,8 +60,8 @@ def mostrar(objetivos,ideal,trayectoria):
   plt.clf()
 
 def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
-  # Buscar la localización más probable del robot, a partir de su sistema
-  # sensorial, dentro de una región cuadrada de centro "centro" y lado "2*radio".
+  # Buscar la localizaciï¿½n mï¿½s probable del robot, a partir de su sistema
+  # sensorial, dentro de una regiï¿½n cuadrada de centro "centro" y lado "2*radio".
 
 
 
@@ -81,17 +84,17 @@ def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
 
 # ******************************************************************************
 
-# Definición del robot:
-P_INICIAL = [0.,4.,0.] # Pose inicial (posición y orientacion)
+# Definiciï¿½n del robot:
+P_INICIAL = [0.,4.,0.] # Pose inicial (posiciï¿½n y orientacion)
 V_LINEAL  = .7         # Velocidad lineal    (m/s)
-V_ANGULAR = 140.       # Velocidad angular   (º/s)
-FPS       = 10.        # Resolución temporal (fps)
+V_ANGULAR = 140.       # Velocidad angular   (ï¿½/s)
+FPS       = 10.        # Resoluciï¿½n temporal (fps)
 
 HOLONOMICO = 1
 GIROPARADO = 0
 LONGITUD   = .2
 
-# Definición de trayectorias:
+# Definiciï¿½n de trayectorias:
 trayectorias = [
     [[1,3]],
     [[0,2],[4,2]],
@@ -100,12 +103,12 @@ trayectorias = [
     [[2+2*sin(.8*pi*i),2+2*cos(.8*pi*i)] for i in range(5)]
     ]
 
-# Definición de los puntos objetivo:
+# Definiciï¿½n de los puntos objetivo:
 if len(sys.argv)<2 or int(sys.argv[1])<0 or int(sys.argv[1])>=len(trayectorias):
   sys.exit(sys.argv[0]+" <indice entre 0 y "+str(len(trayectorias)-1)+">")
 objetivos = trayectorias[int(sys.argv[1])]
 
-# Definición de constantes:
+# Definiciï¿½n de constantes:
 EPSILON = .1                # Umbral de distancia
 V = V_LINEAL/FPS            # Metros por fotograma
 W = V_ANGULAR*pi/(180*FPS)  # Radianes por fotograma
@@ -126,6 +129,8 @@ tiempo  = 0.
 espacio = 0.
 #random.seed(0)
 random.seed(datetime.now())
+# Llamar a la funcion localizacion()
+
 for punto in objetivos:
   while distancia(tray_ideal[-1],punto) > EPSILON and len(tray_ideal) <= 1000:
     pose = ideal.pose()
@@ -148,6 +153,8 @@ for punto in objetivos:
     tray_ideal.append(ideal.pose())
     tray_real.append(real.pose())
     
+    # Llamar a la funcion localizacion() para que calcule la localizacion
+    
     espacio += v
     tiempo  += 1
 
@@ -156,5 +163,5 @@ if len(tray_ideal) > 1000:
 print ("Recorrido: "+str(round(espacio,3))+"m / "+str(tiempo/FPS)+"s")
 print ("Distancia real al objetivo: "+\
     str(round(distancia(tray_real[-1],objetivos[-1]),3))+"m")
-mostrar(objetivos,tray_ideal,tray_real)  # Representación gráfica
+mostrar(objetivos,tray_ideal,tray_real)  # Representaciï¿½n grï¿½fica
 
