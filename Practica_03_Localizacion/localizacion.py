@@ -142,10 +142,13 @@ tray_real = [real.pose()]     # Trayectoria seguida
 tiempo  = 0.
 espacio = 0.
 #random.seed(0)
-random.seed(datetime.now())
+# random.seed(datetime.now())
+random.seed(int(datetime.now().timestamp()))
+
+centro = [0, 4]
 
 ### localizacion() ###
-localizacion(objetivos,real,ideal,[2,2],3,mostrar=1)
+localizacion(objetivos,real,ideal,[2,2],3,mostrar=0)
 ######################
 
 for punto in objetivos:
@@ -164,16 +167,22 @@ for punto in objetivos:
         v = 0
       ideal.move(w,v)
       real.move(w,v)
-      ####### localizacion() #######
-      medidas1 = real.sense(objetivos)
-      prob1 = ideal.measurement_prob(medidas1,objetivos)
-      if(prob1 < 0.80):
-        localizacion(objetivos, real, ideal, ideal.pose(), 0.3, mostrar=0)
+      # ####### localizacion() #######
+      # medidas1 = real.sense(objetivos)
+      # prob1 = ideal.measurement_prob(medidas1,objetivos)
+      # if(prob1 < 0.80):
+      #   localizacion(objetivos, real, ideal, ideal.pose(), 0.3, mostrar=0)
     else:
       ideal.move_triciclo(w,v,LONGITUD)
       real.move_triciclo(w,v,LONGITUD)
     tray_ideal.append(ideal.pose())
     tray_real.append(real.pose())
+    
+    ####### localizacion() #######
+    medidas1 = real.sense(objetivos)
+    prob1 = ideal.measurement_prob(medidas1,objetivos)
+    if(prob1 < 0.80):
+      localizacion(objetivos, real, ideal, ideal.pose(), 0.3, mostrar=0)
     
     espacio += v
     tiempo  += 1
