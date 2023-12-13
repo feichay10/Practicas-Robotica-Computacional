@@ -62,10 +62,24 @@ def mostrar(objetivos,ideal,trayectoria):
 def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
   # Buscar la localizaci�n m�s probable del robot, a partir de su sistema
   # sensorial, dentro de una regi�n cuadrada de centro "centro" y lado "2*radio".
+  mejor_pose = []
+  mejor_peso = -1
+  medidas = real.sense(balizas)
 
-
-
-
+  PRECISION = 0.05
+  r = int(radio/PRECISION) # Como de lejos se va a buscar
+  imagen = [[float('nan') for i in range(2*r)] for j in range(2*r)] # matriz
+  for i in range(2*r): # recorre la matriz de la imagen
+    for j in range(2*r):
+      x = centro[0]+(j-r)*PRECISION # Ponemos el robot ideal en todas las posiciones.
+      y = centro[1]+(i-r)*PRECISION
+      ideal.set(x,y,ideal.orientation)
+      peso = ideal.measurement_prob(medidas,balizas); # Compara la medida con el robot ideal
+      if peso > mejor_peso: # Cuanto menor sea la distancia mayor será la probabilidad
+        mejor_peso = peso
+        mejor_pose = ideal.pose()
+      imagen[i][j] = peso
+  ideal.set(*mejor_pose)
 
   if mostrar:
     #plt.ion() # modo interactivo
@@ -129,7 +143,10 @@ tiempo  = 0.
 espacio = 0.
 #random.seed(0)
 random.seed(datetime.now())
-# Llamar a la funcion localizacion()
+
+### localizacion() ###
+localizacion(objetivos,real,ideal,[2,2],3,mostrar=1)
+######################
 
 for punto in objetivos:
   while distancia(tray_ideal[-1],punto) > EPSILON and len(tray_ideal) <= 1000:
@@ -147,13 +164,16 @@ for punto in objetivos:
         v = 0
       ideal.move(w,v)
       real.move(w,v)
+      ####### localizacion() #######
+      medidas1 = real.sense(objetivos)
+      prob1 = ideal.measurement_prob(medidas1,objetivos)
+      if(prob1 < 0.80):
+        localizacion(objetivos, real, ideal, ideal.pose(), 0.3, mostrar=0)
     else:
       ideal.move_triciclo(w,v,LONGITUD)
       real.move_triciclo(w,v,LONGITUD)
     tray_ideal.append(ideal.pose())
     tray_real.append(real.pose())
-    
-    # Llamar a la funcion localizacion() para que calcule la localizacion
     
     espacio += v
     tiempo  += 1
@@ -164,4 +184,3 @@ print ("Recorrido: "+str(round(espacio,3))+"m / "+str(tiempo/FPS)+"s")
 print ("Distancia real al objetivo: "+\
     str(round(distancia(tray_real[-1],objetivos[-1]),3))+"m")
 mostrar(objetivos,tray_ideal,tray_real)  # Representaci�n gr�fica
-
