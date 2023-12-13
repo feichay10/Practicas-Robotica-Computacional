@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Rob�tica Computacional - Curso 2021/2022
+# Rob�tica Computacional 
 # Grado en Ingenier�a Inform�tica (Cuarto)
 # Pr�ctica 5:
 #     Simulaci�n de robots m�viles holon�micos y no holon�micos.
@@ -51,30 +51,41 @@ def mostrar(objetivos,ideal,trayectoria):
   objT   = np.array(objetivos).T.tolist()
   plt.plot(objT[0],objT[1],'-.o')
   plt.show()
-  raw_input()
+  input()
   plt.clf()
 
-def localizacion(balizas, real, ideal, centro, radio, mostrar=0): # centro a partir de donde busca
-  # Buscar la localizaci�n m�s probable del robot, a partir de su sistema
-  # sensorial, dentro de una regi�n concreta.
-  mejor_pose = []
-  mejor_peso = -1
-  medidas = real.sense(balizas)
+def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
+  # La imagen que almacenará todos los errores dados para todos los puntos en el radio
+  imagen = []
+  # El error más pequeño encontrado que corresponde al punto más probable en el radio
+  min_error = sys.maxsize
+  # El punto más probable en el radio donde se encuentra el robot real
+  best_point = []
+  # Incremento para recorrer todo el radio
+  increment = 0.05
+  for j in np.arange(-radio, radio, increment):
+    imagen.append([])
+    for i in np.arange(-radio, radio, increment):
+      # Obtenemos las componentes del punto actual
+      x_component = centro[0] + i
+      y_component = centro[1] + j
+      # Movemos nuestro robot ideal al punto actual del radio
+      ideal.set(x_component, y_component, ideal.orientation)
+      # Comprobamos la diferencia entre las medidas que tiene el nuevo robot ideal
+      # y las medidas del real.
+      error = real.measurement_prob(ideal.sense(balizas), balizas)
+      # Guardamos el nuevo error dado
+      imagen[-1].append(error)
+      # Si el nuevo error dado es mejor que nuestro error mínimo actual, actualizamos nuestro punto_mejor
+      # y el valor del mejor error ya que significa que es más probable que nuestro robot esté
+      # en el punto actual que estamos comprobando que en el último punto almacenadcleo.
+      if (error < min_error):
+        min_error = error
+        best_point = [x_component, y_component]
+  # Colocamos el robot ideal en el nuevo punto donde pensamos que está ahora el robot real.
+  ideal.set(best_point[0], best_point[1], real.orientation)
+  # print("Modificacion:", best_point, min_error)
 
-  PRECISION = 0.05
-  r = int(radio/PRECISION) # Como de lejos se va a buscar
-  imagen = [[float('nan') for i in range(2*r)] for j in range(2*r)] # matriz
-  for i in range(2*r): # recorre la matriz de la imagen
-    for j in range(2*r):
-      x = centro[0]+(j-r)*PRECISION # Ponemos el robot ideal en todas las posiciones.
-      y = centro[1]+(i-r)*PRECISION
-      ideal.set(x,y,ideal.orientation)
-      peso = ideal.measurement_prob(medidas,balizas); # Compara la medida con el robot ideal
-      if peso > mejor_peso: # Cuanto menor sea la distancia mayor será la probabilidad
-        mejor_peso = peso
-        mejor_pose = ideal.pose()
-      imagen[i][j] = peso
-  ideal.set(*mejor_pose)
 
   if mostrar:
     plt.ion() # modo interactivo
@@ -83,12 +94,12 @@ def localizacion(balizas, real, ideal, centro, radio, mostrar=0): # centro a par
     imagen.reverse()
     plt.imshow(imagen,extent=[centro[0]-radio,centro[0]+radio,\
                               centro[1]-radio,centro[1]+radio])
-    balT = np.array(balizas).T.tolist()
+    balT = np.array(balizas).T.tolist();
     plt.plot(balT[0],balT[1],'or',ms=10)
     plt.plot(ideal.x,ideal.y,'D',c='#ff00ff',ms=10,mew=2)
     plt.plot(real.x, real.y, 'D',c='#00ff00',ms=10,mew=2)
     plt.show()
-    raw_input()
+    input()
     plt.clf()
 
 # ******************************************************************************
@@ -114,23 +125,23 @@ trayectorias = [
 
 # Definici�n de los puntos objetivo:
 if len(sys.argv)<2 or int(sys.argv[1])<0 or int(sys.argv[1])>=len(trayectorias):
-  sys.exit(sys.argv[0]+" <Índice entre 0 y "+str(len(trayectorias)-1)+">")
+  sys.exit(sys.argv[0]+" <índice entre 0 y "+str(len(trayectorias)-1)+">")
 objetivos = trayectorias[int(sys.argv[1])]
 
 # Definici�n de constantes:
-EPSILON = .1                # Umbral de distancia
+EPSILON = .05                # Umbral de distancia
 V = V_LINEAL/FPS            # Metros por fotograma
 W = V_ANGULAR*pi/(180*FPS)  # Radianes por fotograma
 
 ideal = robot()
-ideal.set_noise(0,0,.1)   # Ruido lineal / radial / de sensado
+ideal.set_noise(0, 0, .03)   # Ruido lineal / radial / de sensado
 ideal.set(*P_INICIAL)     # operador 'splat'
 
 real = robot()
-real.set_noise(.01,.01,.1)  # Ruido lineal / radial / de sensado
+real.set_noise(.01,.01,.01)  # Ruido lineal / radial / de sensado
 real.set(*P_INICIAL)
 
-random.seed(datetime.now())
+random.seed(0)
 tray_ideal = [ideal.pose()]  # Trayectoria percibida
 tray_real = [real.pose()]     # Trayectoria seguida
 
@@ -138,11 +149,15 @@ tiempo  = 0.
 espacio = 0.
 #random.seed(0)
 random.seed(datetime.now())
-localizacion(objetivos,real,ideal,[2,2],3,mostrar=1)
+
+centro = [0, 4]
+
+localizacion(objetivos, real, ideal, centro, 5, 1)
+
 for punto in objetivos:
   while distancia(tray_ideal[-1],punto) > EPSILON and len(tray_ideal) <= 1000:
     pose = ideal.pose()
-
+    # Moving the robots
     w = angulo_rel(pose,punto)
     if w > W:  w =  W
     if w < -W: w = -W
@@ -155,21 +170,20 @@ for punto in objetivos:
         v = 0
       ideal.move(w,v)
       real.move(w,v)
-      medidas1 = real.sense(objetivos)
-      prob1 = ideal.measurement_prob(medidas1,objetivos)
-      if(prob1 < 0.80):
-        localizacion(objetivos, real, ideal, ideal.pose(), 0.3, mostrar=0)
     else:
       ideal.move_triciclo(w,v,LONGITUD)
       real.move_triciclo(w,v,LONGITUD)
     tray_ideal.append(ideal.pose())
     tray_real.append(real.pose())
 
+    if (real.measurement_prob(ideal.sense(objetivos), objetivos) > EPSILON) :
+      localizacion(objetivos, real, ideal, ideal.pose(), 0.2, 0)
+    
     espacio += v
     tiempo  += 1
 
 if len(tray_ideal) > 1000:
-  print ("<!> Trayectoria muy larga - puede que no se haya alcanzado la posici�n final.")
+  print ("<!> Trayectoria muy larga - puede que no se haya alcanzado la posición final.")
 print ("Recorrido: "+str(round(espacio,3))+"m / "+str(tiempo/FPS)+"s")
 print ("Distancia real al objetivo: "+\
     str(round(distancia(tray_real[-1],objetivos[-1]),3))+"m")
