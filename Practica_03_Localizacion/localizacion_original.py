@@ -59,6 +59,7 @@ def mostrar(objetivos,ideal,trayectoria):
 def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
   # Buscar la localización más probable del robot, a partir de su sistema
   # sensorial, dentro de una región cuadrada de centro "centro" y lado "2*radio".
+<<<<<<< HEAD
   # imagen=[]
   # for (i = -radio, incremento, radio)
   #   for (j -radio, incremento, radio)
@@ -71,6 +72,11 @@ def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
   # Mejor posicion
 
   # ideal.set(mejor posicion)
+=======
+
+
+
+>>>>>>> 7d17a1cb044af8690a12fdf6dc171938cd15a73a
 
 
   if mostrar:
@@ -135,10 +141,13 @@ tiempo  = 0.
 espacio = 0.
 #random.seed(0)
 random.seed(datetime.now())
+<<<<<<< HEAD
 
 # Localizar inicialmente al robot ideal
 # localizacion()
 
+=======
+>>>>>>> 7d17a1cb044af8690a12fdf6dc171938cd15a73a
 for punto in objetivos:
   while distancia(tray_ideal[-1],punto) > EPSILON and len(tray_ideal) <= 1000:
     pose = ideal.pose()
@@ -160,12 +169,15 @@ for punto in objetivos:
       real.move_triciclo(w,v,LONGITUD)
     tray_ideal.append(ideal.pose())
     tray_real.append(real.pose())
+<<<<<<< HEAD
 
     # Relocalizar, que va a calcular cual es la posicion mas adecuada
     # para el robot idea en funcion de la posicion del robot real
     # if (real.sense comparado con ideal.sense son similares):
     #    error grande
     #    localizar
+=======
+>>>>>>> 7d17a1cb044af8690a12fdf6dc171938cd15a73a
     
     espacio += v
     tiempo  += 1

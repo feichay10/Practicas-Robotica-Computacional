@@ -17,9 +17,80 @@ from datetime import datetime
 # Declaraci�n de funciones
 
 
+<<<<<<< HEAD
 def distancia(a, b):
     # Distancia entre dos puntos (admite poses)
     return np.linalg.norm(np.subtract(a[:2], b[:2]))
+=======
+def angulo_rel(pose,p):
+  # Diferencia angular entre una pose y un punto objetivo 'p'
+  w = atan2(p[1]-pose[1],p[0]-pose[0])-pose[2]
+  while w >  pi: w -= 2*pi
+  while w < -pi: w += 2*pi
+  return w
+
+def mostrar(objetivos,ideal,trayectoria):
+  # Mostrar objetivos y trayectoria:
+  plt.ion() # modo interactivo
+  # Fijar los bordes del gr�fico
+  objT   = np.array(objetivos).T.tolist()
+  trayT  = np.array(trayectoria).T.tolist()
+  ideT   = np.array(ideal).T.tolist()
+  bordes = [min(trayT[0]+objT[0]+ideT[0]),max(trayT[0]+objT[0]+ideT[0]),
+            min(trayT[1]+objT[1]+ideT[1]),max(trayT[1]+objT[1]+ideT[1])]
+  centro = [(bordes[0]+bordes[1])/2.,(bordes[2]+bordes[3])/2.]
+  radio  = max(bordes[1]-bordes[0],bordes[3]-bordes[2])*.75
+  plt.xlim(centro[0]-radio,centro[0]+radio)
+  plt.ylim(centro[1]-radio,centro[1]+radio)
+  # Representar objetivos y trayectoria
+  idealT = np.array(ideal).T.tolist()
+  plt.plot(idealT[0],idealT[1],'-g')
+  plt.plot(trayectoria[0][0],trayectoria[0][1],'or')
+  r = radio * .1
+  for p in trayectoria:
+    plt.plot([p[0],p[0]+r*cos(p[2])],[p[1],p[1]+r*sin(p[2])],'-r')
+    #plt.plot(p[0],p[1],'or')
+  objT   = np.array(objetivos).T.tolist()
+  plt.plot(objT[0],objT[1],'-.o')
+  plt.show()
+  input()
+  plt.clf()
+
+def localizacion(balizas, real, ideal, centro, radio, mostrar=0):
+  # Buscar la localización más probable del robot, a partir de su sistema
+  # sensorial, dentro de una región cuadrada de centro "centro" y lado "2*radio".
+  
+  # La imagen que almacenará todos los errores dados para todos los puntos en el radio
+  imagen = []
+  # El error más pequeño encontrado que corresponde al punto más probable en el radio
+  min_error = sys.maxsize
+  # El punto más probable en el radio donde se encuentra el robot real
+  mejor_punto = []
+  # incremento para recorrer todo el radio
+  incremento = 0.05
+  for j in np.arange(-radio, radio, incremento):
+    imagen.append([])
+    for i in np.arange(-radio, radio, incremento):
+      # Obtenemos las componentes del punto actual
+      x_componente = centro[0] + i
+      y_componente = centro[1] + j
+      # Movemos nuestro robot ideal al punto actual del radio
+      ideal.set(x_componente, y_componente, ideal.orientation)
+      # Comprobamos la diferencia entre las medidas que tiene el nuevo robot ideal
+      # y las medidas del real.
+      error = real.measurement_prob(ideal.sense(balizas), balizas)
+      # Guardamos el nuevo error dado
+      imagen[-1].append(error)
+      # Si el nuevo error dado es mejor que nuestro error mínimo actual, actualizamos nuestro punto_mejor
+      # y el valor del mejor error ya que significa que es más probable que nuestro robot esté
+      # en el punto actual que estamos comprobando que en el último punto almacenadcleo.
+      if (error < min_error):
+        min_error = error
+        mejor_punto = [x_componente, y_componente]
+  # Colocamos el robot ideal en el nuevo punto donde pensamos que está ahora el robot real.
+  ideal.set(mejor_punto[0], mejor_punto[1], real.orientation)
+  # print("Modificacion:", mejor_punto, min_error)
+>>>>>>> 7d17a1cb044af8690a12fdf6dc171938cd15a73a
 
 
 def angulo_rel(pose, p):
@@ -153,6 +224,7 @@ tray_real = [real.pose()]     # Trayectoria seguida
 
 tiempo = 0.
 espacio = 0.
+<<<<<<< HEAD
 # random.seed(0)
 random.seed(datetime.now())
 
@@ -172,6 +244,27 @@ for punto in objetivos:
             v = V
         if (v < 0):
             v = 0
+=======
+#random.seed(0)
+# random.seed(datetime.now())
+random.seed(int(datetime.now().timestamp()))
+
+###### LOCALIZACION ######
+centro = [0, 4]
+localizacion(objetivos, real, ideal, centro, 5, 0)
+##########################
+
+for punto in objetivos:
+  while distancia(tray_ideal[-1],punto) > EPSILON and len(tray_ideal) <= 1000:
+    pose = ideal.pose()
+    
+    w = angulo_rel(pose,punto)
+    if w > W:  w =  W
+    if w < -W: w = -W
+    v = distancia(pose,punto)
+    if (v > V): v = V
+    if (v < 0): v = 0
+>>>>>>> 7d17a1cb044af8690a12fdf6dc171938cd15a73a
 
         if HOLONOMICO:
             if GIROPARADO and abs(w) > .01:
@@ -184,11 +277,24 @@ for punto in objetivos:
         tray_ideal.append(ideal.pose())
         tray_real.append(real.pose())
 
+<<<<<<< HEAD
         if (real.measurement_prob(ideal.sense(objetivos), objetivos) > EPSILON):
             localizacion(objetivos, real, ideal, ideal.pose(), 0.5, 0)
 
         espacio += v
         tiempo += 1
+=======
+    ########## LOCALIZACION ##########
+    # if (real.sense, ideal.sense son similares)
+    #  error grande
+    #  localizacion
+    if (real.measurement_prob(ideal.sense(objetivos), objetivos) > EPSILON) :
+      localizacion(objetivos, real, ideal, ideal.pose(), 0.8, 0)
+    ##################################
+    
+    espacio += v
+    tiempo  += 1
+>>>>>>> 7d17a1cb044af8690a12fdf6dc171938cd15a73a
 
 if len(tray_ideal) > 1000:
     print("<!> Trayectoria muy larga - puede que no se haya alcanzado la posición final.")
