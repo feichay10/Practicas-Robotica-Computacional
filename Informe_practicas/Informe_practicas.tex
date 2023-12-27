@@ -207,5 +207,65 @@ obteniendo así la distancia $d$:
   \cdot (\color{red}R\color{black}- \color{red}\text{ON}\color{black})
 \end{equation*}
 
+Por tanto, el valor de $L_i$ tras cada iteración pasa a ser:
+\begin{equation*}
+  \color{green} \mathbf{L_i} \color{black} +
+  \begin{bmatrix}
+    \cos(\color{blue}\omega\color{black}) \\
+    \sin(\color{blue}\omega\color{black})
+  \end{bmatrix}
+  \cdot (\color{red}R\color{black}- \color{red}\text{ON}\color{black}),\ \ \ con \ 
+  \color{blue}\omega\color{black} = \sum_{j = 0}^{\color{blue}i\color{black}} \theta_j
+\end{equation*}
+
+Para calcular la cinemática inversa en el script en \emph{Python} lo haremos con el algoritmo Cyclic Coordinate Descent (CCD).
+Y antes de empezar a desarrollar el algoritmo CCD, se ha de definir primero los valores articulares para la cinematica directa.
+Para ello se han definido unas listas con los valores articulares de cada articulación del robot y estos valores articulares
+se han definido para que el robot no sobrepase los límites de las articulaciones, limite superior e inferior. Y luego, con 
+otra lista se van a diferenciar entre una articulación rotacional y una prismática.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/listas_ci.png}
+  \caption{Listas de límites de las articulaciones del robot}
+\end{figure}
+
+\newpage
+
+Después, ya diferenciando los valores articulares, en el bucle principal calculamos $\omega$ que para la articulación rotacional 
+calculamos los vectores $V_1$ y $V_2$, que representan las diferencias de posición entre los puntos de interés. Para el vector $V_1$ 
+es la diferencia entre el punto final del robot y el objetivo y para el vector $V_2$ es la diferencia entre el punto final del robot 
+y el punto de interés. Una vez calculados los vectores, calculamos los angulos entre los vectores $V_1$ y $V_2$ y estos angulos se 
+suman a la variable $\theta$ de la articulación rotacional haciendo la diferencia entre los angulos de los vectores $V_1$ y $V_2$.
+Y en el caso de la articulación prismática será la suma de todas las $\theta$ hasta la actual (inclusive) y después se calcula la
+la proyección escalar del vector que va desde el punto final del robot hasta el objetivo sobre la dirección de extensión de la articulación
+prismática. 
+
+Después, hay que prevenir que el robot no sobrepase los límites de las articulaciones, por lo que se ha de comprobar es la posicion actual si es superior o inferior a los límites y si 
+es así la posición pasará a ser la del propio limite, sea superior o inferior.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.55]{img/codigo_ci_ccd.png}
+  \caption{Código de la cinemática inversa con el algoritmo CCD}
+\end{figure}
+
+\newpage
+
+\section{Ejemplo de ejecución}
+Un ejemplo de ejecución del script de la cinemática inversa sería mover el robot al punto x = 5, y = 5:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.35]{img/ejemplo_ci_1.png}
+  \caption{Ejemplo de ejecución de la cinemática inversa en la primera iteración}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.25]{img/ejemplo_ci_2.png}
+  \caption{Ejemplo de ejecución de la cinemática inversa en la última iteración}
+\end{figure}
+
+\chapter{Localización}
+
 
 \end{document}

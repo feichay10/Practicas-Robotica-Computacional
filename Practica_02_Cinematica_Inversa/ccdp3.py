@@ -36,8 +36,23 @@ def muestra_robot(O,obj):
     plt.plot(T[i][0], T[i][1], '-o', color=cs.hsv_to_rgb(i/float(len(T)),1,1))
   plt.plot(obj[0], obj[1], '*')
   plt.show()
-  input("Presiona Enter para continuar...")
+  plt.pause(2)
+  # input("Presiona Enter para continuar...")
   plt.close()
+
+# def muestra_robot(O,obj):
+#   # Muestra el robot graficamente
+#   plt.figure()
+#   plt.xlim(-L,L)
+#   plt.ylim(-L,L)
+#   T = [np.array(o).T.tolist() for o in O]
+#   for i in range(len(T)):
+#     plt.plot(T[i][0], T[i][1], '-o', color=cs.hsv_to_rgb(i/float(len(T)),1,1))
+#   plt.plot(obj[0], obj[1], '*')
+#   plt.pause(0.0001)
+#   plt.show()
+#   input("")
+#   plt.close()
 
 def matriz_T(d,th,a,al):
   # Calcula la matriz T (ángulos de entrada en grados)
@@ -128,7 +143,8 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
     elif [tipo_articulacion[j] == 1 for j in range(num_articulaciones)][i]: # Articulacion prismatica
       print("Articulacion prismatica")
       w = np.sum(th[:j + 1]) # Sumatorio de 'th' de 0 hasta 'actual' (incluido)
-      d = np.dot([np.cos(w), np.sin(w)], np.subtract(objetivo, O[i][-1]))   # Proyección escalar del vector unitario, d = [cos(w), sin(w)] * (objetivo - punto final)
+      # Proyección escalar del vector unitario, d = [cos(w), sin(w)] * (objetivo - punto final)
+      d = np.dot([np.cos(w), np.sin(w)], np.subtract(objetivo, O[i][-1]))  
       a[j] += d   # Actualizamos 'a'
       
       # Comprobamos los límites
