@@ -266,6 +266,58 @@ Un ejemplo de ejecución del script de la cinemática inversa sería mover el ro
 \end{figure}
 
 \chapter{Localización}
+La localización es el proceso de estimar la posición de un robot en un entorno desconocido. La localización es un problema
+fundamental en la robótica móvil, ya que la mayoría de las tareas de robótica móvil requieren que el robot sepa su posición
+en el entorno. La localización es un problema difícil porque el robot no conoce su posición inicial y el entorno puede ser
+desconocido y dinámico. Además, los sensores del robot pueden ser ruidosos y el robot puede tener un movimiento impreciso.
+
+En la práctica de la localización, se ha de calcular la posición más probable del robot, a partir de su sistema sensorial 
+dentro de una región cuadrada de centro “centro” y lado $2 \cdot \text{radio}$.
+
+Para calcular la localización en el script en \emph{Python} es completar la función \emph{localizacion} que recibe como parámetros
+las balizas, la ubicación real del robot, la ubicación ideal del robot, el centro de la región y el radio de la región y una parametro
+mostrar para mostrar el gráfico de la localización. Esta función tiene como objetivo encontrar la ubicación más probable de un robot 
+dentro de una región cuadrada, utilizando su sistema sensorial y una serie de balizas de referencia.
+
+El proceso de localización se realiza mediante la comparación de las medidas del robot real con las medidas del robot ideal en diferentes
+puntos dentro de la región cuadrada. El robot ideal se mueve a cada punto y se calcula el error entre las medidas del robot ideal y las
+medidas del robot real. El punto con el menor error se considera la ubicación más probable del robot real.
+
+El código utiliza un bucle \emph{for} para iterar sobre los puntos dentro de la región cuadrada. Utiliza la función \emph{np.arange} 
+para generar una secuencia de valores dentro del rango del radio de la región. Esta función devuelve un arreglo de valores que se utilizan
+para calcular las coordenadas `x` e `y` del punto actual.
+
+Dentro del bucle, se actualiza la posición del robot ideal al punto actual y se calcula el error entre las medidas del robot ideal y las 
+medidas del robot real utilizando la función \emph{real.measurement\_prob(ideal.sense(balizas), balizas)}. El error se guarda en una matriz de imagen.
+
+El código también realiza un seguimiento del error mínimo encontrado hasta el momento y el punto correspondiente a ese error mínimo. Si se 
+encuentra un error menor que el error mínimo actual, se actualiza el error mínimo y se guarda el punto actual como el mejor punto.
+
+Una vez que se completa el bucle, el robot ideal se coloca en el mejor punto encontrado, lo que se considera la ubicación más probable del 
+robot real. Finalmente, se imprime el mejor punto y el error mínimo.
+
+Una vez desarrollada la función \emph{localizacion}, se ha invocar antes de iterar sobre la lista de puntos objetivos y también al final 
+para relocalizar el robot que va a calcular cual es la posición más adecuada para el robot ideal en función de la posicion del robot real.
+
+\newpage
+
+\section{Codigo de la localización}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.42]{img/localizacion.png}
+  \caption{Código de la localización}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.45]{img/localizacion_objetivos.png}
+  \caption{Código de la localización de los objetivos}
+\end{figure}
+
+\newpage
+
+\section{Ejemplo de ejecución}
 
 
 \end{document}
