@@ -18,6 +18,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+
 # ******************************************************************************
 # Declaraci�n de funciones
 
@@ -60,6 +61,7 @@ def mostrar(objetivos, ideal, trayectoria):
         # plt.plot(p[0],p[1],'or')
     objT = np.array(objetivos).T.tolist()
     plt.plot(objT[0], objT[1], '-.o')
+    plt.ion()  # modo interactivo
     plt.show()
     input()
     plt.clf()
