@@ -1,6 +1,9 @@
 \documentclass[11pt]{report}
 
 % Paquetes y configuraciones adicionales
+\usepackage{amsmath, amsthm, amssymb} % Paquetes matemáticos
+\usepackage[utf8]{inputenc} % Codificación .tex
+\usepackage[T1]{fontenc} % Codificación .pdf
 \usepackage{graphicx}
 \usepackage[export]{adjustbox}
 \usepackage{caption}
@@ -17,10 +20,8 @@
 \usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{subcaption}
-
 \usepackage{listings}
 \usepackage{xcolor}
-
 \usepackage[spanish]{babel}
 
 \newcommand{\subtitle}[1]{
@@ -163,7 +164,7 @@
 \begin{document}
 
 % Portada del informe
-\title{Trabajo Final}
+\title{Trabajo Final - Cuaterniones}
 \subtitle{Robotica Computacional}
 \author{Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)}
 \date{\today}
@@ -183,16 +184,154 @@
 
 % Secciones del informe
 % Capitulo 1
-\chapter{Capitulo 1}
+\chapter{Historia de los cuaterniones}
+Los cuaterniones fueron creados por el matemático irlandés William Rowan Hamilton en 1843. Hamilton buscaba
+formas de extender los números complejos a un número mayor de dimensiones. No pudo hacerlo para 3 dimensiones,
+pero para 4 dimensiones obtuvo los cuaterniones. Hamilton estaba interesado en encontrar una forma de representar
+las rotaciones en tres dimensiones mediante un solo número, ya que en ese momento no existía una forma de hacerlo.
+
+En 1843, Hamilton tuvo una revelación mientras daba un paseo con su mujer. Según
+cuenta la historia, Hamilton se detuvo de repente, sacó un lápiz y escribió los
+símbolos i, j, k en una piedra cercana, y declaró que “aquí y ahora, con la ayuda de
+Dios, el $i$, el $j$, el $k$ de la matemática acaban de recibir vida y movimiento”.
+Inmediatamente, grabó esta expresión en el lateral del puente de Brougham, que estaba
+muy cerca del lugar. Con esto, Hamilton había dado con la idea de los cuaterniones.
+
+Sin embargo, a pesar del gran avance matemático que representaba, las ideas de
+Hamilton no fueron recibidas con entusiasmo por la comunidad matemática de la
+época. Muchos matemáticos estaban acostumbrados a trabajar con números reales
+y complejos, y no podían entender cómo se podrían utilizar los cuaterniones en la
+matemática. Además, el hecho de que los cuaterniones no cumplieran con la
+conmutatividad generaba una gran confusión.
+
+A pesar de esto, Hamilton no se dio por vencido y continuó trabajando en sus ideas
+sobre los cuaterniones. En 1853, publicó un libro llamado "Lectures on
+Quaternions", en el que describió en detalle las propiedades algebraicas de los
+cuaterniones y cómo se podrían utilizar para representar rotaciones en el espacio
+tridimensional.
+
+Con el tiempo, los cuaterniones comenzaron a ser utilizados en áreas como la
+graficación 3D, la robótica y la ingeniería aeroespacial. También se utilizaron en
+algunos algoritmos de inteligencia artificial
+
+\newpage
 
 % Capitulo 2
-\chapter{Capitulo 2}
-% 2.1
-\section{Seccion 2.1}
+\chapter{¿Que son los cuaterniones?}
+Los cuaterniones son una extensión matemática de los números complejos y se utilizan en disciplinas relacionadas
+con la representación y manipulación de orientaciones y rotaciones en el espacio tridimensional.
 
-\chapter{Bibliografía} % En formato APA
-\begin{thebibliography}{99}
-      \bibitem{1} \item Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
-\end{thebibliography}
+Los cuaterniones se utilizan para describir y manipular la orientación de objetos tridimensionales, como
+robots, cámaras o herramientas. Cada cuaternión se compone de un componente escalar(imaginaria) y tres componentes
+vectoriales(real). La forma general de un cuaternión se expresa como:
+\begin{equation*}
+  q = w + xi + yj + zk
+\end{equation*}
+
+Donde $w$ es el componente escalar y $x$, $y$ y $z$ son los componentes vectoriales. La unidad imaginaria
+se representa por $i$, $j$ y $k$ y se definen como:
+\begin{equation*}
+  i^2 = j^2 = k^2 = ijk = -1
+\end{equation*}
+
+Los cuaterniones también se pueden representar mediante un vector de cuatro componentes (w, x, y, z) o una matriz $4x4$:
+\begin{equation*}
+  q = \begin{bmatrix}
+    w & x & y & z
+  \end{bmatrix}
+\end{equation*}
+
+\begin{equation*}
+  q = \begin{bmatrix}
+    w  & x  & y  & z  \\
+    -x & w  & -z & y  \\
+    -y & z  & w  & -x \\
+    -z & -y & x  & w
+  \end{bmatrix}
+\end{equation*}
+
+Los cuaterniones pueden ser de dos tipos:
+\begin{itemize}
+  \item \textbf{Cuaternión Unitario:} Es aquel cuyo valor absoluto es igual a 1.
+  \item \textbf{Cuaternión No Unitario:} Es aquel que no cumple con el valor absoluto igual a 1.
+\end{itemize}
+
+\newpage
+
+% Capitulo 3
+\chapter{Aritmética básica de cuaterniones}
+\begin{itemize}
+  \item \textbf{Suma:} La suma de dos cuaterniones se hace como con los números complejos, es decir componente a componente.
+        \begin{equation*}
+          q_1 + q_2 = (w_1 + w_2) + (x_1 + x_2)i + (y_1 + y_2)j + (z_1 + z_2)k
+        \end{equation*}
+  \item \textbf{Producto:} El producto de dos cuaterniones se hace componente a componente.
+        \begin{align*}
+          q_1 \cdot q_2 & = (w_1 \cdot w_2 - x_1 \cdot x_2 - y_1 \cdot y_2 - z_1 \cdot z_2)        \\
+                        & \quad + (w_1 \cdot x_2 + x_1 \cdot w_2 + y_1 \cdot z_2 - z_1 \cdot y_2)i \\
+                        & \quad + (w_1 \cdot y_2 - x_1 \cdot z_2 + y_1 \cdot w_2 + z_1 \cdot x_2)j \\
+                        & \quad + (w_1 \cdot z_2 + x_1 \cdot y_2 - y_1 \cdot x_2 + z_1 \cdot w_2)k
+        \end{align*}
+  \item \textbf{Conjugación:} La conjugación de un cuaternión se obtiene cambiando el signo de los componentes vectoriales.
+        \subitem - El conjugado de un cuaternión $x = x_1 + x_2i +x_3j + x_4k$ está dado por $\overline{x} = x_1 - x_2i -x_3j - x_4k$
+        \subitem - El valor absoluto de un cuaternión $x$ está dado por: $||x|| = \sqrt{x \cdot \overline{x}} = \sqrt{x_1^2 + x_2^2 + x_3^2 + x_4^2}$
+  \item \textbf{Cociente:} El cociente entre cuaterniones se obtiene rápidamente a partir de la fórmula del inverso del cuaternión:
+        \begin{equation*}
+          q^{-1} = \frac{\overline{q}}{q \cdot \overline{q}}
+        \end{equation*}
+  \item \textbf{Exponenciación:} La exponenciación de un cuaternión; al igual que sucede con los números complejos, está relacionada con
+        funciones trigonométricas. Dado un cuaternión escrito en forma canónica $q = a + bi +cj + dk$ su exponenciación resulta ser:
+        \begin{equation*}
+          e^q = e^{a+bi+cj+dk} = e^a \left( cos\sqrt{b^2+c^2+d^2} + \frac{sen \cdot \sqrt{b^2+c^2+d^2}}{\sqrt{b^2+c^2+d^2}} \cdot (bi + cj + dk) \right)
+        \end{equation*}
+\end{itemize}
+
+\newpage
+
+% Capitulo 4
+\chapter{Aplicaciones}
+Los cuaterniones tienen diversas aplicaciones que van desde la teoría de números, en donde pueden utilizarse par probar resultados como el teorema de los cuatro cuadrados,
+hasta aplicaciones físicas dentro del electromagnetismo, la mecánica cuántica y la teoría de la relatividad, incluso en robots para realizar cirujias.
+
+Los cuateriones se utilizan a menudo en gráficos por computadora, para representar la orientación de un objeto en el espacio tridimensional. También se utilizan en robótica,
+para representar la orientación de un robot o de una herramienta. También se utilizan en la ingeniería aeroespacial, para representar la orientación de un avión o un satélite.
+
+\section{Uso en lo videojuegos}
+Los cuaterniones se utilizan en los videojuegos para representar la orientación de un objeto en el espacio tridimensional. Por ejemplo, se pueden utilizar para representar:
+\begin{itemize}
+  \item \textbf{Rotación de personajes y objetos: } Los cuaterniones se utilizan para representar la orientación de un personaje o un objeto en el espacio tridimensional.
+        Por ejemplo, se pueden utilizar para representar la orientación de un personaje, un vehículo o una cámara.
+  \item \textbf{Control de cámaras: } Los cuaterniones se utilizan para controlar la orientación de una cámara en un videojuego. Por ejemplo, se pueden utilizar para controlar
+        la orientación de una cámara en un juego de disparos en primera persona.
+\end{itemize}
+
+Por lo que en el ámbito de los videojuegos es más facil utilizar cuaterniones que matrices, ya que permite crear animaciones más suaves.
+
+Un programa para desarrollo de videojuegos y que utiliza cuaterniones es Unity. Unity es un motor de videojuego multiplataforma creado por Unity Technologies. En este motor
+se pueden crear videojuegos en 2D y 3D, además de otras simulaciones interactivas. Unity puede hacer uso de cuaterniones para representar la orientación o rotación de un objeto.
+
+\section{Uso en los sistemas robotizados}
+Los cuaterniones se utilizan en los sistemas robotizados para representar y controlar la orientación de un robot. Por ejemplo, se pueden utilizar para representar:
+\begin{itemize}
+  \item \textbf{Cinematica directa: } Con los cuaterniones en la cinematica directa se va calcular la posición y orientación del extremo final de un robot en función de las posiciones de sus
+        articulaciones.
+\end{itemize}
+
+\section{Uso en la ingeniería aeroespacial}
+Los cuaterniones se utilizan en la ingeniería aeroespacial para representar la orientación de un avión o un satélite. Por ejemplo, se pueden utilizar para representar:
+\begin{itemize}
+  \item \textbf{Control de orientación de la nave espacial: } Los cuaterniones se utilizan para describir la orientación de una nave espacial en el espacio. Esto es especialmente útil para misiones
+        automatizadas donde la nave espacial necesita mantener una orientación precisa sin la invervención humana.
+  \item \textbf{Navegación: } Los cuaterniones se utilizan para describir la posición y orientación de nave en el espacio en relación a un sistema de referencia. Esto es especialmente útil para misiones automatizadas donde el avión necesita
+        navegar de forma autónoma.
+\end{itemize}
+
+\newpage
+
+\chapter{Conclusiones}
+Los cuaterniones son una extensión matemática de los números complejos y se utilizan en disciplinas relacionadas con la representación y manipulación de orientaciones y rotaciones en el espacio tridimensional.
+Además, ofrecen una representación compacta y eficiente de la orientación, lo que facilita los cálculos en comparación con otras representaciones como las matrices de rotación y la composición de rotaciones 
+mediante cuaterniones evita problemas como el bloqueo gimbal y proporciona una manera eficiente de manejar las rotaciones en el espacio tridimensional.
+
 
 \end{document}
